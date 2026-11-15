@@ -1,7 +1,7 @@
 <#
   Builds Taskbar Groups and installs it into an existing (or new) program folder.
 
-  - Backs up the target folder first (to <target>.backup-<date>).
+  - Backs up the target folder first (to <target>\backups\<date>, newest 3 kept).
   - Keeps your groups (config\) and shortcuts (Shortcuts\); replaces only program files.
   - Taskbar pins keep working as long as the folder path stays the same.
 
@@ -25,9 +25,15 @@ $running = Get-Process TaskbarGroups -ErrorAction SilentlyContinue | Where-Objec
 if ($running) { throw "Taskbar Groups is running from $Target. Close it first." }
 
 if ((Test-Path $Target) -and -not $NoBackup) {
-    $backup = "$Target.backup-$(Get-Date -Format yyyyMMdd-HHmmss)"
+    # Backups live inside the program folder (backups\<date>), newest 3 kept.
+    $backups = Join-Path $Target 'backups'
+    $backup = Join-Path $backups (Get-Date -Format yyyyMMdd-HHmmss)
     Write-Host "Backing up to $backup"
-    Copy-Item $Target $backup -Recurse
+    New-Item -ItemType Directory -Force $backup | Out-Null
+    Get-ChildItem $Target -Force | Where-Object { $_.Name -notin 'backups', '.update' } |
+        Copy-Item -Destination $backup -Recurse
+    Get-ChildItem $backups -Directory | Sort-Object Name -Descending | Select-Object -Skip 3 |
+        Remove-Item -Recurse -Force
 }
 New-Item -ItemType Directory -Force $Target | Out-Null
 
