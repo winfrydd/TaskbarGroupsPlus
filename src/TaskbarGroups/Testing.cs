@@ -107,6 +107,12 @@ static class Testing
             "popup" => new PopupForm(Group.Load(a[1])!, pt, preview: true),
             "group" => new GroupEditorForm(Group.Load(a[1])),
             "new" => new GroupEditorForm(null),
+            "update" => new DarkPrompt("Version 1.1.0 is available",
+                DarkPrompt.Highlights(File.ReadAllText(a[1])) + "\n\nYour groups and pins are kept.",
+                ["Skip this version", "Not now", "Install"]) { StartPosition = FormStartPosition.CenterScreen },
+            "ask" => new DarkPrompt("Check for updates?",
+                "Only asks GitHub for the newest version number. Nothing is sent or installed without you.",
+                ["No", "Yes"]) { StartPosition = FormStartPosition.CenterScreen },
             _ => new MainForm(null),
         };
         string outFile = a[^1];

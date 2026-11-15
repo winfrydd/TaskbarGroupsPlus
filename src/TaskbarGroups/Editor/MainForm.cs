@@ -294,13 +294,10 @@ sealed class MainForm : Form
     /// <summary>First start only: nothing goes online until the user says yes.</summary>
     void AskAboutUpdates()
     {
-        var answer = MessageBox.Show(this,
-            "Should Taskbar Groups+ check for new versions when this window opens?\n\n" +
-            "It only asks GitHub for the latest version number. Nothing about you or your groups is sent, " +
-            "and nothing is installed unless you click Update.\n\n" +
-            "You can change this any time with \"Check on start\".",
-            Paths.AppName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-        Settings.AutoCheckUpdates = answer == DialogResult.Yes;
+        int answer = DarkPrompt.Show(this, "Check for updates?",
+            "Only asks GitHub for the newest version number. Nothing is sent or installed without you.",
+            "No", "Yes");
+        Settings.AutoCheckUpdates = answer == 1;
         Settings.AskedAboutUpdates = true;
         Settings.Save();
         loading = true;
@@ -323,14 +320,12 @@ sealed class MainForm : Form
                 btnUpdate.Visible = true;
             }
             else if (manual)
-                MessageBox.Show(this, $"You have the latest version ({Paths.Version.ToString(3)}).", Paths.AppName,
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkPrompt.Show(this, "You're up to date", $"Version {Paths.Version.ToString(3)} is the latest.", "OK");
         }
         catch (Exception ex)
         {
             if (manual)
-                MessageBox.Show(this, "Couldn't reach GitHub to check for updates:\n\n" + ex.Message, Paths.AppName,
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkPrompt.Show(this, "Couldn't check for updates", "GitHub couldn't be reached. " + ex.Message, "OK");
         }
         finally { if (!IsDisposed) lnkCheck.Enabled = true; }
     }
@@ -340,26 +335,11 @@ sealed class MainForm : Form
         var r = pendingUpdate;
         if (r == null) return;
         string ver = r.Version.ToString(3);
-        string notes = r.Notes.Trim();
-        if (notes.Length > 700) notes = notes[..700] + "…";
+        string body = DarkPrompt.Highlights(r.Notes);
+        body = (body.Length > 0 ? body + "\n\n" : "") + "Your groups and pins are kept.";
 
-        var install = new TaskDialogCommandLinkButton("Install now",
-            "Your groups and taskbar pins are kept. The window closes and reopens when it's done.");
-        var skip = new TaskDialogCommandLinkButton("Skip this version",
-            "Hide this update. You'll only hear about a newer one.");
-        var later = new TaskDialogCommandLinkButton("Not now", "Ask again next time.");
-        var page = new TaskDialogPage
-        {
-            Caption = Paths.AppName,
-            Heading = $"Version {ver} is available (you have {Paths.Version.ToString(3)})",
-            Text = notes,
-            Icon = TaskDialogIcon.Information,
-            Buttons = { install, skip, later },
-            DefaultButton = install,
-            AllowCancel = true,
-        };
-        var choice = TaskDialog.ShowDialog(this, page);
-        if (choice == skip)
+        int choice = DarkPrompt.Show(this, $"Version {ver} is available", body, "Skip this version", "Not now", "Install");
+        if (choice == 0)
         {
             Settings.SkippedVersion = ver;
             Settings.Save();
@@ -367,7 +347,7 @@ sealed class MainForm : Form
             pendingUpdate = null;
             return;
         }
-        if (choice != install) return;
+        if (choice != 2) return;
 
         btnUpdate.Enabled = false;
         btnUpdate.Text = "Downloading…";
