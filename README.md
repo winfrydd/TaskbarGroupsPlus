@@ -119,7 +119,8 @@ failing silently.
 
 ## Updating
 
-Nothing ever updates by itself. You decide.
+Nothing ever updates by itself. You decide. The first time you open the app, it asks whether
+it may check for new versions. If you say no, it never goes online.
 
 - When a new version is out, an **Update to x.y.z** button appears in the main window.
   Click it to choose **Install now**, **Skip this version** (hides it until a newer one
@@ -172,9 +173,9 @@ Nothing is left in the registry.
 ## Privacy
 
 - No telemetry, no accounts, no ads.
-- The only network request it ever makes is the update check: when you open the main window,
-  it asks `api.github.com` for the latest release of this project. Untick **Check on start**
-  to turn that off. The popup never goes online.
+- The only network request it can make is the update check, and only if you allow it on
+  first start. When you open the main window, it asks `api.github.com` for the latest release
+  of this project. Untick **Check on start** to turn that off. The popup never goes online.
 - Your groups stay on your PC in the `config` folder. They are not part of this repository.
 
 ---

@@ -6,7 +6,10 @@ static class Settings
     static string FilePath => Path.Combine(Paths.ConfigDir, "settings.ini");
 
     /// <summary>Look for a new version each time the main window opens. Off = only when you click "Check for updates".</summary>
-    public static bool AutoCheckUpdates { get; set; } = true;
+    public static bool AutoCheckUpdates { get; set; }
+
+    /// <summary>False until the user has answered the one-time "check for updates?" question.</summary>
+    public static bool AskedAboutUpdates { get; set; }
 
     /// <summary>A version the user chose to skip: no button for it (a newer one still shows).</summary>
     public static string SkippedVersion { get; set; } = "";
@@ -23,7 +26,10 @@ static class Settings
                 string key = line[..eq].Trim(), value = line[(eq + 1)..].Trim();
                 switch (key)
                 {
-                    case "AutoCheckUpdates": AutoCheckUpdates = !value.Equals("false", StringComparison.OrdinalIgnoreCase); break;
+                    case "AutoCheckUpdates":
+                        AutoCheckUpdates = value.Equals("true", StringComparison.OrdinalIgnoreCase);
+                        AskedAboutUpdates = true;
+                        break;
                     case "SkippedVersion": SkippedVersion = value; break;
                 }
             }

@@ -124,7 +124,8 @@ sealed class MainForm : Form
         if (!Program.TestMode)
         {
             CheckWritable();
-            if (Settings.AutoCheckUpdates) _ = CheckForUpdates(manual: false);
+            if (!Settings.AskedAboutUpdates && Updater.Configured) BeginInvoke(AskAboutUpdates);
+            else if (Settings.AutoCheckUpdates) _ = CheckForUpdates(manual: false);
         }
 
         if (openOnStart != null)
@@ -288,6 +289,24 @@ sealed class MainForm : Form
                 "\n\n(Program Files doesn't work without running as administrator.)",
                 Paths.AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
+    }
+
+    /// <summary>First start only: nothing goes online until the user says yes.</summary>
+    void AskAboutUpdates()
+    {
+        var answer = MessageBox.Show(this,
+            "Should Taskbar Groups+ check for new versions when this window opens?\n\n" +
+            "It only asks GitHub for the latest version number. Nothing about you or your groups is sent, " +
+            "and nothing is installed unless you click Update.\n\n" +
+            "You can change this any time with \"Check on start\".",
+            Paths.AppName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        Settings.AutoCheckUpdates = answer == DialogResult.Yes;
+        Settings.AskedAboutUpdates = true;
+        Settings.Save();
+        loading = true;
+        chkAuto.Checked = Settings.AutoCheckUpdates;
+        loading = false;
+        if (Settings.AutoCheckUpdates) _ = CheckForUpdates(manual: false);
     }
 
     async Task CheckForUpdates(bool manual)
