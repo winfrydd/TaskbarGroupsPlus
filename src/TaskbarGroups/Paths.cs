@@ -3,6 +3,14 @@ namespace TaskbarGroups;
 /// <summary>All locations are relative to the folder the exe lives in (portable install).</summary>
 static class Paths
 {
+    public const string AppName = "Taskbar Groups+";
+
+    /// <summary>GitHub "owner/repo" that releases and updates come from.</summary>
+    public const string Repo = "winfrydd/TaskbarGroupsPlus";
+
+    public static readonly Version Version =
+        typeof(Paths).Assembly.GetName().Version is { } v ? new Version(v.Major, v.Minor, Math.Max(v.Build, 0)) : new Version(1, 0, 0);
+
     public static readonly string AppDir = AppContext.BaseDirectory.TrimEnd('\\');
     public static readonly string ExePath = Environment.ProcessPath ?? Path.Combine(AppDir, "TaskbarGroups.exe");
     public static string ConfigDir => Path.Combine(AppDir, "config");

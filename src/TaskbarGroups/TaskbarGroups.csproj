@@ -12,7 +12,12 @@
     <ApplicationIcon>app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Version>1.0.0</Version>
-    <Product>Taskbar Groups</Product>
+    <Product>Taskbar Groups+</Product>
+    <AssemblyTitle>Taskbar Groups+</AssemblyTitle>
+    <Company>Taskbar Groups+ contributors</Company>
+    <Copyright>MIT License. Original © 2020 Jack Schierbeck</Copyright>
+    <!-- Strip local folder paths from the embedded debug info -->
+    <PathMap>$(MSBuildProjectDirectory)=TaskbarGroups</PathMap>
 
     <!-- Runs on any installed .NET 10+ desktop runtime -->
     <RollForward>LatestMajor</RollForward>

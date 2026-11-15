@@ -363,3 +363,7 @@ FodyWeavers.xsd
 _test/
 _shots/
 publish/
+dist/
+config/
+Shortcuts/
+error.log

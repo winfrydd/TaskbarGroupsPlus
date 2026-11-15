@@ -662,7 +662,7 @@ sealed class GroupEditorForm : Form
     {
         if (dirty && DialogResult != DialogResult.OK && DialogResult != DialogResult.Abort)
         {
-            var r = MessageBox.Show(this, "Discard your changes to this group?", "Taskbar Groups",
+            var r = MessageBox.Show(this, "Discard your changes to this group?", Paths.AppName,
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (r != DialogResult.Yes) { e.Cancel = true; DialogResult = DialogResult.None; return; }
         }

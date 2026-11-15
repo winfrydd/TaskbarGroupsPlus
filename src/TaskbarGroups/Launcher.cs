@@ -12,7 +12,7 @@ static class Launcher
         if (!item.Exists)
         {
             MessageBox.Show($"\"{item.DisplayName}\" can't be found:\n\n{item.FilePath}\n\nIt may have been moved or uninstalled. Edit the group to fix it.",
-                "Taskbar Groups", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Paths.AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return false;
         }
 
@@ -43,7 +43,7 @@ static class Launcher
         catch (Exception ex)
         {
             Paths.LogError(ex, "Launching " + item.FilePath);
-            MessageBox.Show($"Couldn't open \"{item.DisplayName}\":\n\n{ex.Message}", "Taskbar Groups",
+            MessageBox.Show($"Couldn't open \"{item.DisplayName}\":\n\n{ex.Message}", Paths.AppName,
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             return false;
         }

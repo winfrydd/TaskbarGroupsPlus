@@ -63,11 +63,41 @@ static class Testing
         return log.Any(l => l.StartsWith("FAIL")) ? 1 : 0;
     }
 
+    /// <summary>--shot demo: groups made only of built-in Windows programs, for README screenshots.</summary>
+    static int MakeDemo()
+    {
+        string win = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+        string sys = Environment.SystemDirectory;
+        ShortcutItem It(string path, string name = "") => new() { FilePath = path, Name = name };
+
+        var tools = new Group { Name = "Tools", ColorString = "#1F1F1F", Columns = 4, ShowLabels = true, IconSize = 32 };
+        ShortcutItem App(string id, string name) => new() { FilePath = id, Name = name, IsWindowsApp = true };
+        tools.Items.AddRange([
+            It(Path.Combine(win, "explorer.exe"), "File Explorer"),
+            It(Path.Combine(sys, "notepad.exe"), "Notepad"),
+            App("Microsoft.WindowsCalculator_8wekyb3d8bbwe!App", "Calculator"),
+            App("Microsoft.Paint_8wekyb3d8bbwe!App", "Paint"),
+            App("Microsoft.WindowsTerminal_8wekyb3d8bbwe!App", "Terminal"),
+            It(Path.Combine(sys, "Taskmgr.exe"), "Task Manager"),
+            App("windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel", "Settings"),
+            It(Path.Combine(sys, "cmd.exe"), "Command Prompt"),
+        ]);
+        GroupStore.Save(tools, null, null);
+
+        var folders = new Group { Name = "Folders", ColorString = "#2B3A55", Columns = 5, IconSize = 32 };
+        foreach (var sf in new[] { Environment.SpecialFolder.MyDocuments, Environment.SpecialFolder.MyPictures,
+                     Environment.SpecialFolder.MyMusic, Environment.SpecialFolder.MyVideos, Environment.SpecialFolder.Desktop })
+            folders.Items.Add(It(Environment.GetFolderPath(sf)));
+        GroupStore.Save(folders, null, null);
+        return 0;
+    }
+
     public static int Run(string[] a)
     {
         Program.TestMode = true;
         if (a[0] == "selftest") return SelfTest(a[^1]);
         if (a[0] == "resave") { var rg = Group.Load(a[1])!; GroupStore.Save(rg, rg.Name, null); return 0; }
+        if (a[0] == "demo") return MakeDemo();
         Application.SetColorMode(SystemColorMode.Dark);
         var center = Screen.PrimaryScreen!.Bounds;
         var pt = new Point(center.X + center.Width / 2, center.Y + center.Height / 2);
